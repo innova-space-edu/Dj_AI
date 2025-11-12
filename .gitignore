@@ -1,0 +1,32 @@
+# Ignorar dependencias de Node.js
+node_modules/
+**/node_modules/
+
+# Ignorar carpetas de compilación o builds
+dist/
+build/
+
+# Ignorar archivos de configuración local
+.env
+.env.local
+
+# Ignorar logs y temporales
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorar archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar cachés de Vite y otras herramientas
+.vite/
+.cache/
+
+# Ignorar carpetas ocultas de IDEs
+.vscode/
+.idea/
+
+# Ignorar cualquier archivo temporal de Windows
+*.tmp
