@@ -1,0 +1,8 @@
+[build]
+  functions = "dj-studio-backend/functions"
+  publish   = "dj-studio-frontend/dist"
+
+[[redirects]]
+  from = "/api/*"
+  to   = "/.netlify/functions/:splat"
+  status = 200
