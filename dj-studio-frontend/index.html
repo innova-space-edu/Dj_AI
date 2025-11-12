@@ -1,79 +1,109 @@
-// src/spotify/index.js
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>DJ Studio — Futuristic Deck</title>
 
-// TODO: Reemplaza esto por tu flujo OAuth (PKCE) y guarda/renueva el access token.
-// Este placeholder es solo para probar rápido.
-const TOKEN = import.meta.env.VITE_SPOTIFY_TOKEN || "<PON_AQUI_TU_ACCESS_TOKEN_VALIDO>";
+    <!-- Content Security Policy (habilita Spotify SDK/API, WebSocket y media externa) -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://sdk.scdn.co;
+      connect-src 'self' https://api.spotify.com https://api-partner.spotify.com wss://*.scdn.co;
+      img-src 'self' data: https://i.scdn.co https://*.scdn.co https://*.spotifycdn.com;
+      style-src 'self' 'unsafe-inline';
+      font-src 'self' data: https://*.spotifycdn.com;
+      frame-src https://open.spotify.com;
+      media-src 'self' https://*.scdn.co https://*.spotifycdn.com https://cdn.pixabay.com blob:;
+      worker-src 'self' blob:;
+      base-uri 'self';
+      manifest-src 'self';
+    ">
 
-/**
- * El SDK de Spotify llamará a esta función global cuando termine de cargar.
- * Debe existir en window antes (este módulo se importa desde main.jsx).
- */
-window.onSpotifyWebPlaybackSDKReady = () => {
-  // Crea el player
-  const player = new Spotify.Player({
-    name: 'DJ Studio Web Player',
-    getOAuthToken: cb => cb(TOKEN),
-    volume: 0.8
-  });
+    <!-- Color de la UI del navegador -->
+    <meta name="theme-color" content="#0b0f1a" />
+    <meta name="color-scheme" content="dark light" />
 
-  // Logs útiles
-  player.addListener('initialization_error', ({ message }) => console.error('[Spotify] initialization_error:', message));
-  player.addListener('authentication_error', ({ message }) => console.error('[Spotify] authentication_error:', message));
-  player.addListener('account_error', ({ message }) => console.error('[Spotify] account_error:', message));
-  player.addListener('playback_error', ({ message }) => console.error('[Spotify] playback_error:', message));
+    <!-- SEO básico / Social -->
+    <meta name="description" content="DJ Studio — Futuristic Deck: mezcla local y Spotify con visualizador en tiempo real, FX y control por voz." />
+    <meta property="og:title" content="DJ Studio — Futuristic Deck" />
+    <meta property="og:description" content="Mezcla local y Spotify con visualizador en tiempo real, FX y control por voz." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/cover.png" />
+    <meta property="og:url" content="/" />
 
-  // Estado cambia (puedes sincronizar UI si quieres)
-  player.addListener('player_state_changed', state => {
-    // console.log('[Spotify] state:', state);
-  });
+    <!-- PWA / iOS -->
+    <link rel="manifest" href="/manifest.webmanifest" type="application/manifest+json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
-  // Dispositivo listo → transferimos reproducción y damos play
-  player.addListener('ready', async ({ device_id }) => {
-    console.log('[Spotify] Ready with Device ID:', device_id);
+    <!-- Iconos / Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="shortcut icon" href="/favicon.ico" />
 
-    try {
-      // 1) Transferir reproducción a este device (lo marca como activo)
-      await fetch('https://api.spotify.com/v1/me/player', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          device_ids: [device_id],
-          play: true
-        })
-      });
+    <!-- Conexiones previas para Spotify SDK / API -->
+    <link rel="preconnect" href="https://sdk.scdn.co" crossorigin>
+    <link rel="preconnect" href="https://api.spotify.com" crossorigin>
 
-      // 2) Reproducir algo concreto (elige una de las opciones)
-      //   a) Un track puntual:
-      // const body = { uris: ["spotify:track:4uLU6hMCjMI75M1A2tKUQC"] };
+    <!-- Estilos mínimos para loader -->
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --fg: #e8ebff;
+        --muted: #a8b0c7;
+        --card: rgba(255,255,255,0.06);
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      }
+      #root { min-height: 100%; }
+      .boot-screen { display: grid; place-items: center; min-height: 100vh; }
+      .boot-card {
+        display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+        border-radius: 14px; background: var(--card); backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      .pulse {
+        width: 12px; height: 12px; border-radius: 50%; background: currentColor;
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      @keyframes pulse { 0%,100%{transform:scale(.9);opacity:.7} 50%{transform:scale(1.15);opacity:1} }
+      .muted { color: var(--muted); }
+      noscript {
+        display: block; margin:16px; padding:12px 14px; border-radius:10px;
+        background:#3b1a1a; color:#ffdede; border:1px solid rgba(255,0,0,.25);
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>Para usar DJ Studio necesitas habilitar JavaScript en tu navegador.</noscript>
 
-      //   b) Una playlist con offset (ej. Today's Top Hits)
-      const body = {
-        context_uri: "spotify:playlist:37i9dQZF1DXcBWIGoYBM5M",
-        offset: { position: 0 }
-      };
+    <!-- Contenedor principal de React -->
+    <div id="root">
+      <div class="boot-screen" role="status" aria-live="polite">
+        <div class="boot-card">
+          <span class="pulse" aria-hidden="true"></span>
+          <div>
+            <strong>DJ Studio</strong><br>
+            <span class="muted">Cargando interfaz…</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
+    <!-- Entrada Vite/React -->
+    <script type="module" src="/src/main.jsx"></script>
 
-      console.log('[Spotify] Playback started on device', device_id);
-    } catch (err) {
-      console.error('[Spotify] transfer/play error:', err);
-    }
-  });
-
-  player.addListener('not_ready', ({ device_id }) => {
-    console.warn('[Spotify] Device ID has gone offline:', device_id);
-  });
-
-  // Conectar (abre wss://*.scdn.co)
-  player.connect();
-};
+    <!-- SDK Spotify (habilitado por CSP) -->
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+  </body>
+</html>
