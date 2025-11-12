@@ -2,11 +2,123 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>DJ Studio — Futuristic Deck</title>
+
+    <!-- Color de la UI del navegador -->
+    <meta name="theme-color" content="#0b0f1a" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- SEO básico / Social -->
+    <meta name="description" content="DJ Studio — Futuristic Deck: mezcla local y Spotify con visualizador en tiempo real, FX y control por voz." />
+    <meta property="og:title" content="DJ Studio — Futuristic Deck" />
+    <meta property="og:description" content="Mezcla local y Spotify con visualizador en tiempo real, FX y control por voz." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/cover.png" />
+    <meta property="og:url" content="/" />
+
+    <!-- iOS / PWA opcional (si usas /public/manifest.webmanifest) -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+    <!-- Iconos / Favicon (ajusta si tus archivos tienen otros nombres) -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    <!-- Fuentes opcionales (descomenta/ajusta si las usas)
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    -->
+
+    <!-- Conexiones previas para Spotify SDK / API (mejora TTFB) -->
+    <link rel="preconnect" href="https://sdk.scdn.co" crossorigin>
+    <link rel="preconnect" href="https://api.spotify.com" crossorigin>
+
+    <!-- Estilos mínimos para loader inicial (antes de que monte React) -->
+    <style>
+      :root {
+        --bg: #0b0f1a;
+        --fg: #e8ebff;
+        --muted: #a8b0c7;
+        --card: rgba(255,255,255,0.06);
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      }
+      #root {
+        min-height: 100%;
+      }
+      /* Loader elegante mientras carga Vite/React */
+      .boot-screen {
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+      }
+      .boot-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 14px;
+        background: var(--card);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      .pulse {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(0.9); opacity: .7; }
+        50% { transform: scale(1.15); opacity: 1; }
+      }
+      .muted { color: var(--muted); }
+      /* NoScript aviso */
+      noscript {
+        display: block;
+        margin: 16px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #3b1a1a;
+        color: #ffdede;
+        border: 1px solid rgba(255, 0, 0, 0.25);
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <noscript>
+      Para usar DJ Studio necesitas habilitar JavaScript en tu navegador.
+    </noscript>
+
+    <!-- Contenedor principal de React -->
+    <div id="root">
+      <!-- Pantalla de arranque (se reemplaza al montar React) -->
+      <div class="boot-screen" role="status" aria-live="polite">
+        <div class="boot-card">
+          <span class="pulse" aria-hidden="true"></span>
+          <div>
+            <strong>DJ Studio</strong><br>
+            <span class="muted">Cargando interfaz…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entrada Vite/React -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
