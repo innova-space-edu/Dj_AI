@@ -1,0 +1,5 @@
+.playlist-panel .section{margin-bottom:14px}
+.btn-spotify{background:#1db954;color:#041;font-weight:700}
+.player-deck .title{font-weight:800;font-size:18px}
+.fx-panel input[type=range]{width:200px}
+.spotify-block{display:grid;grid-template-columns:1fr 1.2fr;gap:12px;margin-top:10px}
