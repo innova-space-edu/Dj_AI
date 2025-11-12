@@ -8,6 +8,21 @@
     />
     <title>DJ Studio — Futuristic Deck</title>
 
+    <!-- Content Security Policy (habilita Spotify SDK/API, WebSocket y media externa) -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://sdk.scdn.co;
+      connect-src 'self' https://api.spotify.com https://api-partner.spotify.com wss://*.scdn.co;
+      img-src 'self' data: https://i.scdn.co https://*.scdn.co https://*.spotifycdn.com;
+      style-src 'self' 'unsafe-inline';
+      font-src 'self' data: https://*.spotifycdn.com;
+      frame-src https://open.spotify.com;
+      media-src 'self' https://*.scdn.co https://*.spotifycdn.com https://cdn.pixabay.com blob:;
+      worker-src 'self' blob:;
+      base-uri 'self';
+      manifest-src 'self';
+    ">
+
     <!-- Color de la UI del navegador -->
     <meta name="theme-color" content="#0b0f1a" />
     <meta name="color-scheme" content="dark light" />
@@ -20,28 +35,22 @@
     <meta property="og:image" content="/cover.png" />
     <meta property="og:url" content="/" />
 
-    <!-- iOS / PWA opcional (si usas /public/manifest.webmanifest) -->
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- PWA / iOS -->
+    <link rel="manifest" href="/manifest.webmanifest" type="application/manifest+json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
-    <!-- Iconos / Favicon (ajusta si tus archivos tienen otros nombres) -->
+    <!-- Iconos / Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="shortcut icon" href="/favicon.ico" />
 
-    <!-- Fuentes opcionales (descomenta/ajusta si las usas)
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    -->
-
-    <!-- Conexiones previas para Spotify SDK / API (mejora TTFB) -->
+    <!-- Conexiones previas para Spotify SDK / API -->
     <link rel="preconnect" href="https://sdk.scdn.co" crossorigin>
     <link rel="preconnect" href="https://api.spotify.com" crossorigin>
 
-    <!-- Estilos mínimos para loader inicial (antes de que monte React) -->
+    <!-- Estilos mínimos para loader -->
     <style>
       :root {
         --bg: #0b0f1a;
@@ -56,57 +65,30 @@
         color: var(--fg);
         font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
       }
-      #root {
-        min-height: 100%;
-      }
-      /* Loader elegante mientras carga Vite/React */
-      .boot-screen {
-        display: grid;
-        place-items: center;
-        min-height: 100vh;
-      }
+      #root { min-height: 100%; }
+      .boot-screen { display: grid; place-items: center; min-height: 100vh; }
       .boot-card {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 18px;
-        border-radius: 14px;
-        background: var(--card);
-        backdrop-filter: blur(6px);
+        display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+        border-radius: 14px; background: var(--card); backdrop-filter: blur(6px);
         border: 1px solid rgba(255,255,255,0.08);
       }
       .pulse {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: currentColor;
+        width: 12px; height: 12px; border-radius: 50%; background: currentColor;
         animation: pulse 1.2s ease-in-out infinite;
       }
-      @keyframes pulse {
-        0%, 100% { transform: scale(0.9); opacity: .7; }
-        50% { transform: scale(1.15); opacity: 1; }
-      }
+      @keyframes pulse { 0%,100%{transform:scale(.9);opacity:.7} 50%{transform:scale(1.15);opacity:1} }
       .muted { color: var(--muted); }
-      /* NoScript aviso */
       noscript {
-        display: block;
-        margin: 16px;
-        padding: 12px 14px;
-        border-radius: 10px;
-        background: #3b1a1a;
-        color: #ffdede;
-        border: 1px solid rgba(255, 0, 0, 0.25);
+        display: block; margin:16px; padding:12px 14px; border-radius:10px;
+        background:#3b1a1a; color:#ffdede; border:1px solid rgba(255,0,0,.25);
       }
     </style>
   </head>
   <body>
-    <noscript>
-      Para usar DJ Studio necesitas habilitar JavaScript en tu navegador.
-    </noscript>
+    <noscript>Para usar DJ Studio necesitas habilitar JavaScript en tu navegador.</noscript>
 
     <!-- Contenedor principal de React -->
     <div id="root">
-      <!-- Pantalla de arranque (se reemplaza al montar React) -->
       <div class="boot-screen" role="status" aria-live="polite">
         <div class="boot-card">
           <span class="pulse" aria-hidden="true"></span>
@@ -120,5 +102,8 @@
 
     <!-- Entrada Vite/React -->
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- SDK Spotify (habilitado por CSP) -->
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
   </body>
 </html>
