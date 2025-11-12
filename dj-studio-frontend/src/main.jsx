@@ -1,12 +1,19 @@
+// src/main.jsx
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
+
+// Estilos globales
 import './styles/theme.css'
 import './styles/layout.css'
 import './styles/components.css'
 
-// Carga perezosa del SDK de Spotify si no existe (mejora conexión Spotify)
-(function ensureSpotifySDK(){
+// ⚡ Importa el inicializador del Web Playback SDK (registra window.onSpotifyWebPlaybackSDKReady)
+//    Debe cargarse antes de que el script externo del SDK termine de cargar.
+import './spotify/index.js'
+
+// Carga perezosa del SDK de Spotify si no existe (idempotente)
+;(function ensureSpotifySDK () {
   if (window.Spotify) return
   const id = 'spotify-web-playback-sdk'
   if (document.getElementById(id)) return
