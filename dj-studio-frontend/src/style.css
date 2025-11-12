@@ -14,6 +14,7 @@
 .nowplaying{ grid-area: now; }
 .tracks{ grid-area: tracks; }
 
+/* Panel de pistas: ahora listado vertical hacia abajo (sin scroll horizontal) */
 .tracks{
   overflow-y:auto;
   overflow-x:hidden;
@@ -22,11 +23,15 @@
   background:rgba(255,255,255,0.04);
   backdrop-filter:blur(6px);
 }
+
+/* ======== NUEVO: Lista vertical hacia abajo ======== */
 .tracks .list{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:12px;
+  display:flex;               /* antes: grid */
+  flex-direction:column;      /* apila hacia abajo */
+  gap:10px;
 }
+
+/* Tarjeta de pista más compacta para listas largas */
 .track-card{
   display:flex;
   align-items:center;
@@ -34,8 +39,55 @@
   padding:10px 12px;
   border-radius:12px;
   background:linear-gradient(135deg,rgba(88,64,255,.12),rgba(255,64,176,.12));
+  border:1px solid rgba(255,255,255,0.08);
 }
-.track-card .actions{margin-left:auto;display:flex;gap:8px;}
+
+.track-card .cover{
+  width:56px;
+  height:56px;
+  border-radius:8px;
+  flex:0 0 auto;
+  overflow:hidden;
+}
+
+.track-card .meta{
+  display:flex;
+  flex-direction:column;
+  min-width:0; /* permite truncar */
+}
+
+.track-card .title{
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.track-card .artist{
+  opacity:.8;
+  font-size:.9rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.track-card .actions{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+}
+
+.track-card .actions .btn{
+  padding:6px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;
+  transition:transform .08s ease, background .15s ease;
+}
+.track-card .actions .btn:active{ transform:scale(.98); }
+.track-card .actions .btn:hover{ background:rgba(255,255,255,0.14); }
+
 @media (max-width:1024px){
   .dj-layout .grid{
     grid-template-areas:
@@ -46,4 +98,7 @@
     grid-template-columns:1fr;
     grid-template-rows:auto auto auto minmax(300px,50vh);
   }
+  /* En móvil, botones más grandes y lista con más aire */
+  .track-card{ padding:12px 14px; }
+  .track-card .actions .btn{ padding:8px 12px; }
 }
