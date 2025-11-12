@@ -1,0 +1,2 @@
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://sdk.scdn.co; connect-src 'self' https://api.spotify.com https://api-partner.spotify.com wss://*.scdn.co; img-src 'self' data: https://i.scdn.co https://*.scdn.co https://*.spotifycdn.com; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://*.spotifycdn.com; frame-src https://open.spotify.com; media-src 'self' https://*.scdn.co https://*.spotifycdn.com https://cdn.pixabay.com blob:; worker-src 'self' blob:; base-uri 'self'; manifest-src 'self'
