@@ -1,8 +1,24 @@
 [build]
-  functions = "dj-studio-backend/functions"
-  publish   = "dj-studio-frontend/dist"
+  base = "dj-studio-frontend"          # Entrar a la subcarpeta del frontend
+  command = "npm ci && npm run build"  # Construir desde esa base
+  publish = "dist"                     # Dist relativo a la base
 
+[build.environment]
+  NODE_VERSION = "18"
+
+# Si usas Netlify Functions fuera del frontend:
+# (ruta relativa a 'base' = dj-studio-frontend)
+functions = "../dj-studio-backend/functions"
+
+# SPA (Vite/React) redirección a index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Si tienes funciones (API) tipo /.netlify/functions/*
+# y quieres enrutar /api/* hacia ahí:
 [[redirects]]
   from = "/api/*"
-  to   = "/.netlify/functions/:splat"
+  to = "/.netlify/functions/:splat"
   status = 200
