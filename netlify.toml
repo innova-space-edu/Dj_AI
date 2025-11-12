@@ -1,24 +1,78 @@
+############################
+# Netlify full configuration
+############################
+
 [build]
-  base = "dj-studio-frontend"          # Entrar a la subcarpeta del frontend
-  command = "npm ci && npm run build"  # Construir desde esa base
-  publish = "dist"                     # Dist relativo a la base
+  # Entra a la subcarpeta del frontend
+  base = "dj-studio-frontend"
+  # Usa instalación limpia y build
+  command = "npm ci && npm run build"
+  # Publica la carpeta de salida de Vite
+  publish = "dist"
 
 [build.environment]
+  # Fuerza Node 18 en Netlify
   NODE_VERSION = "18"
+  # Si deseas, puedes poner aquí tus VITE_*
+  # (recomendado: ponerlas en la UI de Netlify)
+  # VITE_SPOTIFY_CLIENT_ID = ""
+  # VITE_SPOTIFY_REDIRECT_URI = ""
 
-# Si usas Netlify Functions fuera del frontend:
-# (ruta relativa a 'base' = dj-studio-frontend)
-functions = "../dj-studio-backend/functions"
+# Configuración de Functions (si usas backend serverless)
+[functions]
+  # Directorio de funciones (relativo a la RAÍZ del repo cuando NO usas "package/base".
+  # Como usamos [build].base, Netlify toma rutas relativas a la RAÍZ igualmente
+  # (documentación actual). Si tus funciones están fuera del frontend, usa ../
+  directory = "../dj-studio-backend/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["node-fetch"]
 
-# SPA (Vite/React) redirección a index.html
+# Redirects para SPA (Vite/React) — evita 404 en rutas de cliente
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Si tienes funciones (API) tipo /.netlify/functions/*
-# y quieres enrutar /api/* hacia ahí:
+# Redirect para API → Netlify Functions (p. ej., /api/auth, /api/tracks)
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+# Cache fuerte para assets versionados de Vite
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Encabezados de seguridad base para toda la app
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Ajusta CSP según lo que uses (Spotify, fuentes, etc.)
+    # Si algo no carga, agrega su dominio aquí.
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      img-src 'self' data: blob:;
+      font-src 'self' https://fonts.gstatic.com;
+      connect-src 'self' https://api.spotify.com https://accounts.spotify.com;
+      frame-ancestors 'self';
+    """
+
+##########################################
+# Contextos (opcional): producción y previas
+##########################################
+
+[context.production.environment]
+  # Variables específicas de prod (si quieres)
+  # VITE_ENV = "production"
+
+[context.deploy-preview.environment]
+  # Variables para deploy previews
+  # VITE_ENV = "preview"
