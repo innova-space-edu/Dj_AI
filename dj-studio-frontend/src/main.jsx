@@ -9,7 +9,7 @@ import './styles/layout.css'
 import './styles/components.css'
 
 // ⚡ Importa el inicializador del Web Playback SDK (registra window.onSpotifyWebPlaybackSDKReady)
-//    Debe cargarse antes de que el script externo del SDK termine de cargar.
+// Debe cargarse antes de que el script externo del SDK termine de cargar.
 import './spotify/index.js'
 
 // Carga perezosa del SDK de Spotify si no existe (idempotente)
